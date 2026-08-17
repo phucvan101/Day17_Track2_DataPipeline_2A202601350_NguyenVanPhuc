@@ -26,7 +26,7 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
 from tools.common import (  # noqa: E402
-    DBT_DIR, EXPECTED, GOLD_TABLES, WAREHOUSE, checksum, connect,
+    DATA, DBT_DIR, EXPECTED, GOLD_TABLES, WAREHOUSE, checksum, connect,
     expected_counts, fmt, row_count, table_exists,
 )
 from tools.run_pipeline import reset_warehouse, run_once  # noqa: E402
@@ -227,8 +227,8 @@ def main() -> int:
     for label, ok, detail in inv:
         print(f"  {label:<44}{OK if ok else BAD} {detail}")
 
-    from tools.explain import BASELINE_FILE
-    d = dashboard_check() if BASELINE_FILE.exists() else None
+    has_extra_data = (DATA / "gold_events").exists()
+    d = dashboard_check() if has_extra_data else None
     if d and "note" not in d:
         print(f"  {'dashboard rows scanned':<44}"
               f"{OK if d['ok'] else BAD} {d['before']:,} → {d['after']:,} "
